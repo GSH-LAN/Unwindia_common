@@ -4,5 +4,8 @@
 </p>
 
 # UNWINDIA common
-> Common code & modules for [Unwindia](https://github.com/GSH-LAN/Unwindia)
----
+
+![Codecov](https://img.shields.io/codecov/c/gh/GSH-LAN/Unwindia_common?style=flat-square&token=D3ME50U8KT)
+
+
+Common code & modules for [Unwindia](https://github.com/GSH-LAN/Unwindia)
