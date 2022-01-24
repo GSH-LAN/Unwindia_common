@@ -3,9 +3,11 @@ module github.com/GSH-LAN/Unwindia_common
 go 1.17
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/Sytten/logrus-zap-hook v0.1.0
 	github.com/apache/pulsar-client-go v0.7.0
 	github.com/gammazero/workerpool v1.1.2
+	github.com/jmoiron/sqlx v1.3.4
 	github.com/sirupsen/logrus v1.8.1
 	go.uber.org/zap v1.20.0
 )
