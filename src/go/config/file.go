@@ -1,11 +1,13 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"path"
 
 	"github.com/GSH-LAN/Unwindia_common/src/go/logger"
+	"github.com/fsnotify/fsnotify"
 	"go.uber.org/zap"
 )
 
@@ -16,18 +18,41 @@ func init() {
 }
 
 type ConfigFileImpl struct {
+	ctx                context.Context
 	currentConfig      *Config
 	configFilename     string
 	templatesDirectory string
+	watcher            *fsnotify.Watcher
 }
 
-func NewConfigFile(filename, templatesDirectory string) (ConfigClient, error) {
-	cfg := &ConfigFileImpl{
-		configFilename:     filename,
-		templatesDirectory: templatesDirectory,
+func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (ConfigClient, error) {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return nil, err
 	}
 
-	cfg.loadConfig()
+	go func() {
+		for {
+			// wait for context closed
+			if ctx.Err() != nil {
+				watcher.Close()
+			}
+		}
+	}()
+
+	cfg := &ConfigFileImpl{
+		ctx:                ctx,
+		configFilename:     filename,
+		templatesDirectory: templatesDirectory,
+		watcher:            watcher,
+	}
+
+	_, err = cfg.loadConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.startFileWatcher()
 
 	return cfg, nil
 }
@@ -36,7 +61,7 @@ func (c *ConfigFileImpl) GetConfig() *Config {
 	if c.currentConfig == nil {
 		_, err := c.loadConfig()
 		if err != nil {
-			log.Error("Eoor loading config: %+v", err)
+			log.Error("Error loading config: %+v", err)
 		}
 	}
 
@@ -75,4 +100,30 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 	c.currentConfig = &cfg
 
 	return c.currentConfig, nil
+}
+
+func (c *ConfigFileImpl) startFileWatcher() {
+	go func() {
+		for {
+			select {
+			case event, ok := <-c.watcher.Events:
+				if !ok {
+					return
+				}
+				log.Infof("Config file watcher event: %+v", event)
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					log.Infof("modified config file: %+v", event.Name)
+					_, err := c.loadConfig()
+					if err != nil {
+						log.Errorf("Error loading configfrom file : %+v", err)
+					}
+				}
+			case err, ok := <-c.watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Errorf("error: %+v", err)
+			}
+		}
+	}()
 }
