@@ -29,12 +29,12 @@ var Events_value = map[string]Events{
 	"UNWINDIA_CMS_CONTEST_READY_ALL": UNWINDIA_CMS_CONTEST_READY_ALL,
 }
 
-func (x Events) String() string {
-	s, ok := Events_name[int(x)]
+func (e Events) String() string {
+	s, ok := Events_name[int(e)]
 	if ok {
 		return s
 	}
-	return strconv.Itoa(int(x))
+	return strconv.Itoa(int(e))
 }
 
 type NewContest struct {
