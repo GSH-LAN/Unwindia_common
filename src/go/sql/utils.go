@@ -7,15 +7,15 @@ import (
 	"github.com/GSH-LAN/Unwindia_common/src/go/helper"
 )
 
-func (d *sqlClient) getFieldsFromModelWithoutTablename(model Table) (tableName string, fieldList string, err error) {
+func (d *sqlClient) getFieldsFromModel(model Table) (tableName string, fieldList string, err error) {
 	if tabler, ok := model.(Table); ok {
 		tableName = tabler.TableName()
 	}
-	fieldList, err = d.getFieldsFromModel(model, tableName)
+	fieldList, err = d.getFieldsFromModelWithTablename(model, tableName)
 	return
 }
 
-func (d *sqlClient) getFieldsFromModel(model interface{}, tableName string) (string, error) {
+func (d *sqlClient) getFieldsFromModelWithTablename(model interface{}, tableName string) (string, error) {
 
 	if queryString, ok := d.modelFieldCache[tableName]; ok {
 		// log.Debugf("Retrieved query for %s from cache: %s", tableName, queryString)

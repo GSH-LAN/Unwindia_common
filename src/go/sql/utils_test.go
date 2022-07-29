@@ -83,16 +83,16 @@ func Test_sqlClient_getFieldsFromModel(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.sqlClient.getFieldsFromModel(tt.args.model, tt.args.tableName)
+			got, err := tt.sqlClient.getFieldsFromModelWithTablename(tt.args.model, tt.args.tableName)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("sqlClient.getFieldsFromModel() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("sqlClient.getFieldsFromModelWithTablename() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("sqlClient.getFieldsFromModel() = %v, want %v", got, tt.want)
+				t.Errorf("sqlClient.getFieldsFromModelWithTablename() = %v, want %v", got, tt.want)
 			}
 			if tt.args.cacheLen != len(tt.sqlClient.modelFieldCache) {
-				t.Errorf("sqlClient.getFieldsFromModel().modelFieldCache = %v, want %v", tt.sqlClient.modelFieldCache, tt.sqlClient.modelFieldCache)
+				t.Errorf("sqlClient.getFieldsFromModelWithTablename().modelFieldCache = %v, want %v", tt.sqlClient.modelFieldCache, tt.sqlClient.modelFieldCache)
 			}
 		})
 	}
@@ -148,16 +148,16 @@ func Test_sqlClient_getFieldsFromModelWithoutTablename(t *testing.T) {
 				DB:              tt.fields.DB,
 				modelFieldCache: tt.fields.modelFieldCache,
 			}
-			gotTableName, gotFieldList, err := d.getFieldsFromModelWithoutTablename(tt.args.model)
+			gotTableName, gotFieldList, err := d.getFieldsFromModel(tt.args.model)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("sqlClient.getFieldsFromModelWithoutTablename() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("sqlClient.getFieldsFromModel() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if gotTableName != tt.wantTableName {
-				t.Errorf("sqlClient.getFieldsFromModelWithoutTablename() gotTableName = %v, want %v", gotTableName, tt.wantTableName)
+				t.Errorf("sqlClient.getFieldsFromModel() gotTableName = %v, want %v", gotTableName, tt.wantTableName)
 			}
 			if gotFieldList != tt.wantFieldList {
-				t.Errorf("sqlClient.getFieldsFromModelWithoutTablename() gotFieldList = %v, want %v", gotFieldList, tt.wantFieldList)
+				t.Errorf("sqlClient.getFieldsFromModel() gotFieldList = %v, want %v", gotFieldList, tt.wantFieldList)
 			}
 		})
 	}
