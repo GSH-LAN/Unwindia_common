@@ -2,13 +2,14 @@ package config
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
-	"path"
-
 	"github.com/GSH-LAN/Unwindia_common/src/go/logger"
 	"github.com/fsnotify/fsnotify"
+	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
+	"io/ioutil"
+	"path"
+	"reflect"
+	"sync"
 )
 
 var log *zap.SugaredLogger
@@ -23,12 +24,18 @@ type ConfigFileImpl struct {
 	configFilename     string
 	templatesDirectory string
 	watcher            *fsnotify.Watcher
+	lock               sync.RWMutex
 }
 
 func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (ConfigClient, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, err
+	}
+
+	err = watcher.Add(filename)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	go func() {
@@ -40,7 +47,7 @@ func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (Co
 		}
 	}()
 
-	cfg := &ConfigFileImpl{
+	cfg := ConfigFileImpl{
 		ctx:                ctx,
 		configFilename:     filename,
 		templatesDirectory: templatesDirectory,
@@ -54,9 +61,11 @@ func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (Co
 
 	cfg.startFileWatcher()
 
-	return cfg, nil
+	return &cfg, nil
 }
 func (c *ConfigFileImpl) GetConfig() *Config {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
 
 	if c.currentConfig == nil {
 		_, err := c.loadConfig()
@@ -69,6 +78,9 @@ func (c *ConfigFileImpl) GetConfig() *Config {
 }
 
 func (c *ConfigFileImpl) loadConfig() (*Config, error) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
 	var cfg Config
 
 	configFile, err := ioutil.ReadFile(c.configFilename)
@@ -77,7 +89,9 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	json.Unmarshal(configFile, &cfg)
+	if err = jsoniter.Unmarshal(configFile, &cfg); err != nil {
+		return c.currentConfig, err
+	}
 
 	log.Infof("Loaded config from file: %+v", cfg)
 
@@ -97,7 +111,9 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 		cfg.Templates = templates
 	}
 
-	c.currentConfig = &cfg
+	if !reflect.DeepEqual(cfg, Config{}) || c.currentConfig == nil {
+		c.currentConfig = &cfg
+	}
 
 	return c.currentConfig, nil
 }

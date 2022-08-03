@@ -7,7 +7,7 @@ type ConfigClient interface {
 }
 
 type Config struct {
-	Templates            map[string]string      `json:"templates",omitempty`
+	Templates            map[string]string      `json:"templates,omitempty"`
 	CmsConfig            CmsConfig              `json:"cmsConfig"`
 	UpdateDotlanOnEvents []messagebroker.Events `json:"updateDotlanOnEvents"`
 }

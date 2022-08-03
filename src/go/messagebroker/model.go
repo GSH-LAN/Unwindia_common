@@ -64,9 +64,36 @@ func (e *Events) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	if ev, ok := Events_value[string(b)]; ok {
+	s := string(b)
+	if len(s) > 0 && s[0] == '"' {
+		s = s[1:]
+	}
+	if len(s) > 0 && s[len(s)-1] == '"' {
+		s = s[:len(s)-1]
+	}
+
+	if ev, ok := Events_value[s]; ok {
 		*e = ev
 		return nil
 	}
 	return fmt.Errorf("invalid code: %q", string(b))
+}
+
+type MessageType struct {
+	Created string
+	Updated string
+	Deleted string
+}
+
+var MessageTypes = MessageType{
+	Created: "created",
+	Updated: "updated",
+	Deleted: "deleted",
+}
+
+type Message struct {
+	Specversion    string       `json:"specversion"`
+	Type           string       `json:"type"`
+	ModificationID string       `json:"modification_id"`
+	Data           *interface{} `json:"data,omitempty"`
 }
