@@ -1,27 +1,29 @@
 package logger
 
 import (
-	"fmt"
-
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"os"
+	"strings"
+	"time"
 )
 
-var logger *zap.SugaredLogger
-
 func init() {
-	var config = zap.NewProductionConfig()
-	config.Level = zap.NewAtomicLevelAt(zap.InfoLevel)
-	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	config.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	l, err := config.Build()
-	if err != nil {
-		fmt.Printf("Error happened initializing logger: %+v", err)
-		panic(err)
-	}
-	logger = l.Sugar()
+	log.Logger = zerolog.New(zerolog.ConsoleWriter{
+		Out:        os.Stderr,
+		TimeFormat: time.RFC3339,
+	}).With().Timestamp().Logger()
 }
 
-func GetSugaredLogger() *zap.SugaredLogger {
-	return logger
+func Set(level string) error {
+	lvl, err := zerolog.ParseLevel(strings.ToLower(level))
+	if err != nil {
+		log.Error().Err(err).Str("level", level).Msg("Error parsing log level")
+		return err
+	}
+
+	log.Logger = log.Level(lvl)
+	log.Logger.Info().Str("level", level).Msg("Changed log level")
+
+	return nil
 }
