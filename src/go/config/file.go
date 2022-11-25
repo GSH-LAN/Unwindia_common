@@ -34,8 +34,9 @@ func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (Co
 	go func() {
 		for {
 			// wait for context closed
-			if ctx.Err() != nil {
-				watcher.Close()
+			select {
+			case <-ctx.Done():
+				_ = watcher.Close()
 			}
 		}
 	}()

@@ -21,7 +21,6 @@ const (
 	UNWINDIA_MATCH_READY_A
 	UNWINDIA_MATCH_READY_B
 	UNWINDIA_MATCH_READY_ALL
-	UNWINDIA_MATCH_UPDATE
 	UNWINDIA_MATCH_FINISHED
 	_max_eventid
 )
@@ -77,7 +76,15 @@ func (e *MatchEvent) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	if ev, ok := Events_value[string(b)]; ok {
+	s := string(b)
+	if len(s) > 0 && s[0] == '"' {
+		s = s[1:]
+	}
+	if len(s) > 0 && s[len(s)-1] == '"' {
+		s = s[:len(s)-1]
+	}
+
+	if ev, ok := Events_value[s]; ok {
 		*e = ev
 		return nil
 	}

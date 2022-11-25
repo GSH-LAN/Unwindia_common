@@ -5,6 +5,7 @@ import (
 	"github.com/GSH-LAN/Unwindia_common/src/go/messagebroker"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"log"
 	"os"
 	"reflect"
 	"testing"
@@ -17,7 +18,7 @@ const configTestJson = `{
     "dotlanTournamentFilter": "teventid = 1",
     "defaultGame": "csgo"
   },
-  "updateDotlanOnEvents": ["UNWINDIA_CMS_CONTEST_NEW"]
+  "updateDotlanOnEvents": ["UNWINDIA_MATCH_NEW"]
 }`
 
 var testConfig = Config{
@@ -27,7 +28,7 @@ var testConfig = Config{
 		TournamentFilter: "teventid = 1",
 		DefaultGame:      "csgo",
 	},
-	UpdateDotlanOnEvents: []messagebroker.Events{messagebroker.UNWINDIA_CMS_CONTEST_NEW},
+	UpdateDotlanOnEvents: []messagebroker.MatchEvent{messagebroker.UNWINDIA_MATCH_NEW},
 }
 
 const configTestJsonUpdated = `{
@@ -36,7 +37,7 @@ const configTestJsonUpdated = `{
     "dotlanTournamentFilter": "teventid = 2",
     "defaultGame": "csgo"
   },
-  "updateDotlanOnEvents": ["UNWINDIA_CMS_CONTEST_NEW"]
+  "updateDotlanOnEvents": ["UNWINDIA_MATCH_NEW"]
 }`
 
 var testConfigUpdated = Config{
@@ -46,7 +47,7 @@ var testConfigUpdated = Config{
 		TournamentFilter: "teventid = 2",
 		DefaultGame:      "csgo",
 	},
-	UpdateDotlanOnEvents: []messagebroker.Events{messagebroker.UNWINDIA_CMS_CONTEST_NEW},
+	UpdateDotlanOnEvents: []messagebroker.MatchEvent{messagebroker.UNWINDIA_MATCH_NEW},
 }
 
 const configTestJsonBroken = `{
