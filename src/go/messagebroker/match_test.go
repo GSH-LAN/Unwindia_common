@@ -18,8 +18,8 @@ func TestMatchEvent_String(t *testing.T) {
 		},
 		{
 			name: "test_max_eventid",
-			e:    _max_eventid,
-			want: strconv.Itoa(int(_max_eventid)),
+			e:    _maxEventid,
+			want: strconv.Itoa(int(_maxEventid)),
 		},
 	}
 	for _, tt := range tests {

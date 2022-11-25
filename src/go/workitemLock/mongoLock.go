@@ -18,14 +18,14 @@ const (
 // MongoWorkItemLock is a workitem lock implementation based on MongoDB
 type MongoWorkItemLock struct {
 	lockName     string
-	lockId       string
+	lockID       string
 	dbCollection *mongo.Collection
 }
 
-func NewMongoWorkItemLock(lockName, lockId string, db *mongo.Database) *MongoWorkItemLock {
+func NewMongoWorkItemLock(lockName, lockID string, db *mongo.Database) *MongoWorkItemLock {
 	lock := &MongoWorkItemLock{
 		lockName:     lockName,
-		lockId:       lockId,
+		lockID:       lockID,
 		dbCollection: db.Collection(fmt.Sprintf("%s_%s", lockCollectionPrefix, lockName)),
 	}
 
@@ -44,9 +44,9 @@ func (w *MongoWorkItemLock) housekeeping() {
 	}
 }
 
+// Lock locks a workitem for the initialized lockID
 func (w *MongoWorkItemLock) Lock(ctx context.Context, workitemID string, ttl *time.Duration) error {
-
-	expiresAfter := defaultTtl
+	expiresAfter := defaultTTL
 	if ttl != nil {
 		expiresAfter = *ttl
 	}
@@ -55,7 +55,7 @@ func (w *MongoWorkItemLock) Lock(ctx context.Context, workitemID string, ttl *ti
 
 	doc := &WorkItemLockEntry{
 		ID:        workitemID,
-		LockedBy:  w.lockId,
+		LockedBy:  w.lockID,
 		CreatedAt: time.Now(),
 		ExpiresAt: &expiresAt,
 	}
@@ -79,6 +79,7 @@ func (w *MongoWorkItemLock) Lock(ctx context.Context, workitemID string, ttl *ti
 	return nil
 }
 
+// Unlock removes the lock for the workitem
 func (w *MongoWorkItemLock) Unlock(ctx context.Context, workitemID string) error {
 	deleteResult, err := w.dbCollection.DeleteOne(ctx, bson.M{"_id": workitemID})
 	if err != nil {
@@ -88,6 +89,7 @@ func (w *MongoWorkItemLock) Unlock(ctx context.Context, workitemID string) error
 	return nil
 }
 
+// StartHousekeeping starts a housekeeping goroutine which removes expired locks
 func (w *MongoWorkItemLock) StartHousekeeping() {
 	ticker := time.NewTicker(housekeepingInterval)
 	for {

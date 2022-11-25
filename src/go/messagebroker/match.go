@@ -22,10 +22,10 @@ const (
 	UNWINDIA_MATCH_READY_B
 	UNWINDIA_MATCH_READY_ALL
 	UNWINDIA_MATCH_FINISHED
-	_max_eventid
+	_maxEventid
 )
 
-var Events_name = map[int]string{
+var EventsName = map[int]string{
 	0: "UNWINDIA_MATCH_NEW",
 	1: "UNWINDIA_MATCH_READY_A",
 	2: "UNWINDIA_MATCH_READY_B",
@@ -33,7 +33,7 @@ var Events_name = map[int]string{
 	4: "UNWINDIA_MATCH_FINISHED",
 }
 
-var Events_value = map[string]MatchEvent{
+var EventsValue = map[string]MatchEvent{
 	"UNWINDIA_MATCH_NEW":       UNWINDIA_MATCH_NEW,
 	"UNWINDIA_MATCH_READY_A":   UNWINDIA_MATCH_READY_A,
 	"UNWINDIA_MATCH_READY_B":   UNWINDIA_MATCH_READY_B,
@@ -42,7 +42,7 @@ var Events_value = map[string]MatchEvent{
 }
 
 func (e MatchEvent) String() string {
-	s, ok := Events_name[int(e)]
+	s, ok := EventsName[int(e)]
 	if ok {
 		return s
 	}
@@ -68,7 +68,7 @@ func (e *MatchEvent) UnmarshalJSON(b []byte) error {
 	}
 
 	if ci, err := strconv.ParseUint(string(b), 10, 32); err == nil {
-		if ci >= uint64(_max_eventid) {
+		if ci >= uint64(_maxEventid) {
 			return fmt.Errorf("invalid code: %q", ci)
 		}
 
@@ -84,7 +84,7 @@ func (e *MatchEvent) UnmarshalJSON(b []byte) error {
 		s = s[:len(s)-1]
 	}
 
-	if ev, ok := Events_value[s]; ok {
+	if ev, ok := EventsValue[s]; ok {
 		*e = ev
 		return nil
 	}

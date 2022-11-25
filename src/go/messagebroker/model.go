@@ -11,23 +11,23 @@ const (
 	MessageTypeCreated MessageTypes = iota
 	MessageTypeUpdated
 	MessageTypeDeleted
-	_max_messagetype
+	_maxMessageType
 )
 
-var MessageTypes_name = map[int]string{
+var MessageTypesName = map[int]string{
 	0: "create",
 	1: "update",
 	2: "delete",
 }
 
-var MessageTypes_value = map[string]MessageTypes{
-	MessageTypes_name[0]: MessageTypeCreated,
-	MessageTypes_name[1]: MessageTypeUpdated,
-	MessageTypes_name[2]: MessageTypeDeleted,
+var MessageTypesValue = map[string]MessageTypes{
+	MessageTypesName[0]: MessageTypeCreated,
+	MessageTypesName[1]: MessageTypeUpdated,
+	MessageTypesName[2]: MessageTypeDeleted,
 }
 
 func (m MessageTypes) String() string {
-	s, ok := MessageTypes_name[int(m)]
+	s, ok := MessageTypesName[int(m)]
 	if ok {
 		return s
 	}
@@ -47,7 +47,7 @@ func (m *MessageTypes) UnmarshalJSON(b []byte) error {
 	}
 
 	if ci, err := strconv.ParseUint(string(b), 10, 32); err == nil {
-		if ci >= uint64(_max_messagetype) {
+		if ci >= uint64(_maxMessageType) {
 			return fmt.Errorf("invalid code: %q", ci)
 		}
 
@@ -55,7 +55,7 @@ func (m *MessageTypes) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	if mv, ok := MessageTypes_value[string(b)]; ok {
+	if mv, ok := MessageTypesValue[string(b)]; ok {
 		*m = mv
 		return nil
 	}

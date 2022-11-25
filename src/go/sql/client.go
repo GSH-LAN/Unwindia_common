@@ -2,18 +2,18 @@ package sql
 
 import "github.com/jmoiron/sqlx"
 
-type sqlClient struct {
+type SqlClient struct {
 	*sqlx.DB
 	modelFieldCache map[string]string
 }
 
-func New(driverName, dataSourceName string) (*sqlClient, error) {
+func New(driverName, dataSourceName string) (*SqlClient, error) {
 	db, err := sqlx.Connect(driverName, dataSourceName)
 	if err != nil {
 		return nil, err
 	}
 
-	return &sqlClient{
+	return &SqlClient{
 		db,
 		make(map[string]string),
 	}, nil

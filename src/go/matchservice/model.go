@@ -4,7 +4,7 @@ package matchservice
 type Player struct {
 	Id             string // The id of the player in the external tournament system
 	Name           string // Name of the player in the external tournament system
-	GameProviderId string // Id of an game provider, e.g. SteamId for CS:GO
+	GameProviderID string // Id of an game provider, e.g. SteamId for CS:GO
 	Picture        []byte `json:"picture,omitempty"` // Picture of the player, optional
 }
 
@@ -16,9 +16,10 @@ type Team struct {
 	Picture []byte   `json:"picture,omitempty"` // Picture of the team, optional
 }
 
+// MatchInfo represents the information of a match
 type MatchInfo struct {
 	Id                 string // Unwindia Match ID
-	MsId               string // MatchService Match-ID
+	MsID               string // MatchService Match-ID
 	Team1              Team   // Team 1
 	Team2              Team   // Team 2
 	PlayerAmount       uint   // Amount of players in the match

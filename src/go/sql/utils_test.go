@@ -29,7 +29,7 @@ func Test_sqlClient_getFieldsFromModel(t *testing.T) {
 
 	fieldCache := make(map[string]string)
 
-	c := sqlClient{
+	c := SqlClient{
 		sqlxDB,
 		fieldCache,
 	}
@@ -41,7 +41,7 @@ func Test_sqlClient_getFieldsFromModel(t *testing.T) {
 	}
 	tests := []struct {
 		name      string
-		sqlClient sqlClient
+		sqlClient SqlClient
 		args      args
 		want      string
 		wantErr   bool
@@ -85,14 +85,14 @@ func Test_sqlClient_getFieldsFromModel(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := tt.sqlClient.getFieldsFromModelWithTablename(tt.args.model, tt.args.tableName)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("sqlClient.getFieldsFromModelWithTablename() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SqlClient.getFieldsFromModelWithTablename() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("sqlClient.getFieldsFromModelWithTablename() = %v, want %v", got, tt.want)
+				t.Errorf("SqlClient.getFieldsFromModelWithTablename() = %v, want %v", got, tt.want)
 			}
 			if tt.args.cacheLen != len(tt.sqlClient.modelFieldCache) {
-				t.Errorf("sqlClient.getFieldsFromModelWithTablename().modelFieldCache = %v, want %v", tt.sqlClient.modelFieldCache, tt.sqlClient.modelFieldCache)
+				t.Errorf("SqlClient.getFieldsFromModelWithTablename().modelFieldCache = %v, want %v", tt.sqlClient.modelFieldCache, tt.sqlClient.modelFieldCache)
 			}
 		})
 	}
@@ -144,20 +144,20 @@ func Test_sqlClient_getFieldsFromModelWithoutTablename(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &sqlClient{
+			d := &SqlClient{
 				DB:              tt.fields.DB,
 				modelFieldCache: tt.fields.modelFieldCache,
 			}
 			gotTableName, gotFieldList, err := d.getFieldsFromModel(tt.args.model)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("sqlClient.getFieldsFromModel() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SqlClient.getFieldsFromModel() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if gotTableName != tt.wantTableName {
-				t.Errorf("sqlClient.getFieldsFromModel() gotTableName = %v, want %v", gotTableName, tt.wantTableName)
+				t.Errorf("SqlClient.getFieldsFromModel() gotTableName = %v, want %v", gotTableName, tt.wantTableName)
 			}
 			if gotFieldList != tt.wantFieldList {
-				t.Errorf("sqlClient.getFieldsFromModel() gotFieldList = %v, want %v", gotFieldList, tt.wantFieldList)
+				t.Errorf("SqlClient.getFieldsFromModel() gotFieldList = %v, want %v", gotFieldList, tt.wantFieldList)
 			}
 		})
 	}

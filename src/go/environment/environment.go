@@ -1,5 +1,6 @@
 package environment
 
+// BaseEnvironment is a struct that contains the basic environment variables for configuring the unwindia services
 type BaseEnvironment struct {
 	LogLevel         string `env:"LOG_LEVEL" envDefault:"INFO"`
 	ServiceID        string `env:"SERVICE_ID" envDefault:"UNWINDIA_GENERIC_SERVICE"`

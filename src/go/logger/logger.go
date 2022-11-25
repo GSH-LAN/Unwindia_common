@@ -1,3 +1,4 @@
+// Package logger configures the zerolog logger
 package logger
 
 import (

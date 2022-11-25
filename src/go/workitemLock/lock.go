@@ -1,3 +1,4 @@
+// Package workitemLock provides a locking mechanism for workitems
 package workitemLock
 
 import (
@@ -6,7 +7,7 @@ import (
 )
 
 const (
-	defaultTtl = time.Second * 120
+	defaultTTL = time.Second * 120
 )
 
 // WorkItemLock allows the unwindia services to lock workitems to prevent concurrent processing

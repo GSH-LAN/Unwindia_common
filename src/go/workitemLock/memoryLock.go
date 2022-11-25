@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// MemoryWorkItemLock is a simple in-memory implementation of the WorkItemLock interface. Cannot be used for horizontal scaling.
 type MemoryWorkItemLock struct {
 	locks map[string]time.Time
 }
@@ -36,7 +37,7 @@ func (w *MemoryWorkItemLock) Lock(_ context.Context, workitemID string, ttl *tim
 		}
 	}
 
-	expiresAt := time.Now().Add(defaultTtl)
+	expiresAt := time.Now().Add(defaultTTL)
 	if ttl != nil {
 		expiresAt = time.Now().Add(*ttl)
 	}

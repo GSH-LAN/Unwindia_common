@@ -10,21 +10,21 @@ type PulsarAuth int
 const (
 	AUTH_SIMPLE PulsarAuth = iota
 	AUTH_OAUTH2
-	_max_authid
+	_maxAuthid
 )
 
-var PulsarAuth_name = map[int]string{
+var PulsarAuthName = map[int]string{
 	0: "simple",
 	1: "oauth2",
 }
 
-var PulsarAuth_value = map[string]PulsarAuth{
-	PulsarAuth_name[0]: AUTH_SIMPLE,
-	PulsarAuth_name[1]: AUTH_OAUTH2,
+var PulsarAuthValue = map[string]PulsarAuth{
+	PulsarAuthName[0]: AUTH_SIMPLE,
+	PulsarAuthName[1]: AUTH_OAUTH2,
 }
 
 func (p PulsarAuth) String() string {
-	s, ok := PulsarAuth_name[int(p)]
+	s, ok := PulsarAuthName[int(p)]
 	if ok {
 		return s
 	}
@@ -44,7 +44,7 @@ func (p *PulsarAuth) UnmarshalJSON(b []byte) error {
 	}
 
 	if ci, err := strconv.ParseUint(string(b), 10, 32); err == nil {
-		if ci >= uint64(_max_authid) {
+		if ci >= uint64(_maxAuthid) {
 			return fmt.Errorf("invalid code: %q", ci)
 		}
 
@@ -52,7 +52,7 @@ func (p *PulsarAuth) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	if ev, ok := PulsarAuth_value[string(b)]; ok {
+	if ev, ok := PulsarAuthValue[string(b)]; ok {
 		*p = ev
 		return nil
 	}

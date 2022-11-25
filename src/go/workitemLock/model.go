@@ -22,21 +22,21 @@ type WorkItemLockType int
 const (
 	LOCK_MEMORY WorkItemLockType = iota
 	LOCK_MONGODB
-	_max_lock
+	_maxLock
 )
 
-var LockType_name = map[int]string{
+var LockTypeName = map[int]string{
 	0: "memory",
 	1: "mongodb",
 }
 
-var LockType_value = map[string]WorkItemLockType{
-	LockType_name[0]: LOCK_MEMORY,
-	LockType_name[1]: LOCK_MONGODB,
+var LockTypeValue = map[string]WorkItemLockType{
+	LockTypeName[0]: LOCK_MEMORY,
+	LockTypeName[1]: LOCK_MONGODB,
 }
 
 func (p WorkItemLockType) String() string {
-	s, ok := LockType_name[int(p)]
+	s, ok := LockTypeName[int(p)]
 	if ok {
 		return s
 	}
@@ -56,7 +56,7 @@ func (p *WorkItemLockType) UnmarshalJSON(b []byte) error {
 	}
 
 	if ci, err := strconv.ParseUint(string(b), 10, 32); err == nil {
-		if ci >= uint64(_max_lock) {
+		if ci >= uint64(_maxLock) {
 			return fmt.Errorf("invalid code: %q", ci)
 		}
 
@@ -64,7 +64,15 @@ func (p *WorkItemLockType) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	if ev, ok := LockType_value[string(b)]; ok {
+	s := string(b)
+	if len(s) > 0 && s[0] == '"' {
+		s = s[1:]
+	}
+	if len(s) > 0 && s[len(s)-1] == '"' {
+		s = s[:len(s)-1]
+	}
+
+	if ev, ok := LockTypeValue[s]; ok {
 		*p = ev
 		return nil
 	}
