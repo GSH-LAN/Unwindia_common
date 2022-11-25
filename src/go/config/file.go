@@ -2,21 +2,14 @@ package config
 
 import (
 	"context"
-	"github.com/GSH-LAN/Unwindia_common/src/go/logger"
 	"github.com/fsnotify/fsnotify"
 	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
-	"io/ioutil"
+	"github.com/rs/zerolog/log"
+	"os"
 	"path"
 	"reflect"
 	"sync"
 )
-
-var log *zap.SugaredLogger
-
-func init() {
-	log = logger.GetSugaredLogger()
-}
 
 type ConfigFileImpl struct {
 	ctx                context.Context
@@ -35,7 +28,7 @@ func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (Co
 
 	err = watcher.Add(filename)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("Error adding config file watcher")
 	}
 
 	go func() {
@@ -59,7 +52,7 @@ func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (Co
 		return nil, err
 	}
 
-	cfg.startFileWatcher()
+	go cfg.startFileWatcher()
 
 	return &cfg, nil
 }
@@ -70,7 +63,7 @@ func (c *ConfigFileImpl) GetConfig() *Config {
 	if c.currentConfig == nil {
 		_, err := c.loadConfig()
 		if err != nil {
-			log.Error("Error loading config: %+v", err)
+			log.Error().Err(err).Msg("Error loading config")
 		}
 	}
 
@@ -83,9 +76,9 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 
 	var cfg Config
 
-	configFile, err := ioutil.ReadFile(c.configFilename)
+	configFile, err := os.ReadFile(c.configFilename)
 	if err != nil {
-		log.Errorf("Error loading config file %s: %+v", c.configFilename, err)
+		log.Error().Err(err).Str("filename", c.configFilename).Msg("Error loading config file")
 		return nil, err
 	}
 
@@ -93,21 +86,21 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 		return c.currentConfig, err
 	}
 
-	log.Infof("Loaded config from file: %+v", cfg)
+	log.Info().Msgf("Loaded config from file: %+v", cfg)
 
 	templates := make(map[string]string)
 
-	if files, err := ioutil.ReadDir(c.templatesDirectory); err != nil {
-		log.Warnf("Error loading templates: %+v", err)
+	if files, err := os.ReadDir(c.templatesDirectory); err != nil {
+		log.Warn().Err(err).Msg("Error loading templates")
 	} else {
 		for _, file := range files {
-			if filecontent, err := ioutil.ReadFile(path.Join(c.templatesDirectory, file.Name())); err != nil {
-				log.Warnf("Error loading content of file %s: %+v", file.Name(), err)
+			if filecontent, err := os.ReadFile(path.Join(c.templatesDirectory, file.Name())); err != nil {
+				log.Warn().Err(err).Str("filename", file.Name()).Msg("Error loading content of file")
 			} else {
 				templates[file.Name()] = string(filecontent)
 			}
 		}
-		log.Infof("Loaded templates: %+v", templates)
+		log.Info().Msgf("Loaded templates: %+v", templates)
 		cfg.Templates = templates
 	}
 
@@ -119,27 +112,25 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 }
 
 func (c *ConfigFileImpl) startFileWatcher() {
-	go func() {
-		for {
-			select {
-			case event, ok := <-c.watcher.Events:
-				if !ok {
-					return
-				}
-				log.Infof("Config file watcher event: %+v", event)
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					log.Infof("modified config file: %+v", event.Name)
-					_, err := c.loadConfig()
-					if err != nil {
-						log.Errorf("Error loading configfrom file : %+v", err)
-					}
-				}
-			case err, ok := <-c.watcher.Errors:
-				if !ok {
-					return
-				}
-				log.Errorf("error: %+v", err)
+	for {
+		select {
+		case event, ok := <-c.watcher.Events:
+			if !ok {
+				return
 			}
+			log.Debug().Msgf("Config file watcher event: %+v", event)
+			if event.Op&fsnotify.Write == fsnotify.Write {
+				log.Info().Str("event", event.Name).Msgf("modified config file")
+				_, err := c.loadConfig()
+				if err != nil {
+					log.Error().Err(err).Msg("Error loading config from file")
+				}
+			}
+		case err, ok := <-c.watcher.Errors:
+			if !ok {
+				return
+			}
+			log.Error().Err(err).Msg("Filewatcher encountered error")
 		}
-	}()
+	}
 }

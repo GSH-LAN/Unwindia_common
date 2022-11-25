@@ -62,7 +62,7 @@ var configTestFile *os.File
 
 func TestMain(m *testing.M) {
 	// Setup temp file for config
-	file, err := ioutil.TempFile(os.TempDir(), "config.*.json")
+	file, err := ioutil.TempFile("", "config.*.json")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -153,7 +153,7 @@ func TestConfigFileImpl_ReloadConfigOnChange(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			file, err := ioutil.TempFile(os.TempDir(), "config.*.json")
+			file, err := ioutil.TempFile("", "config.*.json")
 			if err != nil {
 				log.Fatal(err)
 			}
