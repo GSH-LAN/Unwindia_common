@@ -13,10 +13,10 @@ func init() {
 	log.Logger = zerolog.New(zerolog.ConsoleWriter{
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
-	}).With().Timestamp().Logger()
+	}).Level(zerolog.InfoLevel).With().Timestamp().Logger()
 }
 
-func Set(level string) error {
+func SetLogLevel(level string) error {
 	lvl, err := zerolog.ParseLevel(strings.ToLower(level))
 	if err != nil {
 		log.Error().Err(err).Str("level", level).Msg("Error parsing log level")
@@ -24,7 +24,7 @@ func Set(level string) error {
 	}
 
 	log.Logger = log.Level(lvl)
-	log.Logger.Info().Str("level", level).Msg("Changed log level")
+	log.Info().Str("loglevel", level).Msgf("Changed loglevel")
 
 	return nil
 }
