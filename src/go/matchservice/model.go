@@ -14,6 +14,7 @@ type Team struct {
 	Name    string   // Name of the team in the external tournament system
 	Players []Player // List of players in the team
 	Picture []byte   `json:"picture,omitempty"` // Picture of the team, optional
+	Ready   bool     // Ready indicates that the team is in ready state in match service
 }
 
 // MatchInfo represents the information of a match
