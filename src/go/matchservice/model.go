@@ -31,4 +31,8 @@ type MatchInfo struct {
 	ServerPasswordMgmt string // Server password for management
 	ServerTvAddress    string // Server TV address
 	ServerTvPassword   string // Server TV password
+	TournamentName     string // MatchService name of the tournament
+	MatchTitle         string // MatchService title of the match
+	Ready              bool   // Match is ready to start, typically all teams are ready
+	Finished           bool   // Match is finished
 }
