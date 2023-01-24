@@ -6,6 +6,7 @@ type Player struct {
 	Name           string // Name of the player in the external tournament system
 	GameProviderID string // Id of an game provider, e.g. SteamId for CS:GO
 	Picture        []byte `json:"picture,omitempty"` // Picture of the player, optional
+	Captain        bool   // This player is the team captain
 }
 
 // Team represents a team which is a part of a match
