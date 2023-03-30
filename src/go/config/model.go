@@ -48,7 +48,7 @@ type GamerServerConfigTemplate struct {
 	Environment             map[string]interface{} `json:"environment"` // Environment settings for a game. Can be values or matching properties of a gameserver match thingy object in go-template like format // TODO: set correct object description
 	TvSlots                 int                    `json:"tvSlots"`
 	DeleteAfterDuration     Duration               `json:"deleteAfterDuration"`
-	ServerReadyRconCommand  string                 `json:"serverReadyRconCommand"`
+	ServerReadyRconCommands []string               `json:"serverReadyRconCommands"`
 	ServerReadyRconWaitTime Duration               `json:"serverReadyRconWaitTime"`
 }
 
