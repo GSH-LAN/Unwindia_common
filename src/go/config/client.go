@@ -1,7 +1,19 @@
 package config
 
+import "github.com/GSH-LAN/Unwindia_common/src/go/matchservice"
+
 type ConfigClientImpl struct {
 	currentConfig *Config
+}
+
+func (c ConfigClientImpl) GetGameServerTemplateForMatch(info matchservice.MatchInfo) (*GamerServerConfigTemplate, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (c ConfigClientImpl) GetGameServerTemplate(gameName string) (*GamerServerConfigTemplate, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func NewConfigClient() (ConfigClient, error) {

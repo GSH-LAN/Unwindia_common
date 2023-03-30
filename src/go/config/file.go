@@ -2,13 +2,18 @@ package config
 
 import (
 	"context"
+	"github.com/GSH-LAN/Unwindia_common/src/go/matchservice"
+	"github.com/GSH-LAN/Unwindia_common/src/go/unwindiaError"
 	"github.com/fsnotify/fsnotify"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/rs/zerolog/log"
 	"os"
 	"path"
 	"reflect"
+	"strconv"
+	"strings"
 	"sync"
+	"text/template"
 )
 
 type ConfigFileImpl struct {
@@ -18,6 +23,61 @@ type ConfigFileImpl struct {
 	templatesDirectory string
 	watcher            *fsnotify.Watcher
 	lock               sync.RWMutex
+}
+
+func (c *ConfigFileImpl) GetGameServerTemplateForMatch(info matchservice.MatchInfo) (*GamerServerConfigTemplate, error) {
+	gameName := info.Game
+	gameValid := false
+	var gsTemplate GamerServerConfigTemplate
+	for game, cfg := range c.GetConfig().UnwindiaPteroConfig.Configs {
+		if game == gameName {
+			gameValid = true
+			gsTemplate = cfg
+			break
+		}
+	}
+
+	if !gameValid {
+		return nil, unwindiaError.NewInvalidGameError(gameName)
+	}
+
+	funcs := map[string]any{
+		"contains":  strings.Contains,
+		"hasPrefix": strings.HasPrefix,
+		"hasSuffix": strings.HasSuffix}
+
+	// TODO: make this shit reliable even with kinda broken configs
+	// we now parse environments to replace custom variables and convert numeric values
+	var newEnvironment = make(map[string]interface{})
+	for envName, envValue := range gsTemplate.Environment {
+		if val, ok := envValue.(string); ok {
+
+			parsedEnvVar := strings.Builder{}
+			err := template.Must(template.New("serverEnvironment").Funcs(funcs).Parse(val)).Execute(&parsedEnvVar, nil)
+			if err != nil {
+				log.Error().Err(err).Msg("Error parsing environment template")
+			} else {
+				val = parsedEnvVar.String()
+			}
+
+			if intValue, err := strconv.Atoi(val); err == nil {
+				envValue = intValue
+				log.Trace().Str("environment", envName).Int("value", intValue).Msg("Environemt is type int (parsed from string)")
+			} else {
+				envValue = val
+				log.Trace().Str("environment", envName).Str("value", val).Msg("Environemt is type string")
+			}
+		}
+		newEnvironment[envName] = envValue
+	}
+
+	gsTemplate.Environment = newEnvironment
+
+	return &gsTemplate, nil
+}
+
+func (c *ConfigFileImpl) GetGameServerTemplate(gameName string) (*GamerServerConfigTemplate, error) {
+	return c.GetGameServerTemplateForMatch(matchservice.MatchInfo{Game: gameName})
 }
 
 func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (ConfigClient, error) {

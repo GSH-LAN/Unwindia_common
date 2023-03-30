@@ -20,20 +20,22 @@ type Team struct {
 
 // MatchInfo represents the information of a match
 type MatchInfo struct {
-	Id                 string // Unwindia Match ID
-	MsID               string // MatchService Match-ID
-	Team1              Team   // Team 1
-	Team2              Team   // Team 2
-	PlayerAmount       uint   // Amount of players in the match
-	Game               string // Game name
-	Map                string // Map name
-	ServerAddress      string // Server address
-	ServerPassword     string // Server password
-	ServerPasswordMgmt string // Server password for management
-	ServerTvAddress    string // Server TV address
-	ServerTvPassword   string // Server TV password
-	TournamentName     string // MatchService name of the tournament
-	MatchTitle         string // MatchService title of the match
-	Ready              bool   // Match is ready to start, typically all teams are ready
-	Finished           bool   // Match is finished
+	Id                 string   // Unwindia Match ID
+	MsID               string   // MatchService Match-ID
+	Team1              Team     // Team 1
+	Team2              Team     // Team 2
+	PlayerAmount       uint     // Amount of players in the match
+	Game               string   // Game name
+	Map                string   // Map name
+	ServerAddress      string   // Server address
+	ServerPassword     string   // Server password
+	ServerPasswordMgmt string   // Server password for management
+	ServerTvAddress    string   // Server TV address
+	ServerTvPassword   string   // Server TV password
+	TournamentName     string   // MatchService name of the tournament
+	MatchTitle         string   // MatchService title of the match
+	MapList            []string // List of available maps for the match
+	NumberOfMaps       int      // Matchservice amount of maps which should be played
+	Ready              bool     // Match is ready to start, typically all teams are ready
+	Finished           bool     // Match is finished
 }
