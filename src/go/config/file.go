@@ -188,7 +188,7 @@ func (c *ConfigFileImpl) startFileWatcher() {
 				return
 			}
 			log.Debug().Msgf("Config file watcher event: %+v", event)
-			if event.Op&fsnotify.Write == fsnotify.Write {
+			if event.Has(fsnotify.Write) || event.Has(fsnotify.Chmod) {
 				log.Info().Str("event", event.Name).Msgf("modified config file")
 				_, err := c.loadConfig()
 				if err != nil {
