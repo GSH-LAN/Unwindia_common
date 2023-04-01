@@ -44,7 +44,8 @@ func (c *ConfigFileImpl) GetGameServerTemplateForMatch(info matchservice.MatchIn
 	funcs := map[string]any{
 		"contains":  strings.Contains,
 		"hasPrefix": strings.HasPrefix,
-		"hasSuffix": strings.HasSuffix}
+		"hasSuffix": strings.HasSuffix,
+	}
 
 	// TODO: make this shit reliable even with kinda broken configs
 	// we now parse environments to replace custom variables and convert numeric values
@@ -86,9 +87,16 @@ func NewConfigFile(ctx context.Context, filename, templatesDirectory string) (Co
 		return nil, err
 	}
 
+	// fileWatcher for config-file
 	err = watcher.Add(filename)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Error adding config file watcher")
+	}
+
+	// fileWatcher for template-files
+	err = watcher.Add(templatesDirectory)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error adding template file watcher")
 	}
 
 	go func() {

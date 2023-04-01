@@ -47,6 +47,7 @@ type GamerServerConfigTemplate struct {
 	ForceLimits             bool                   `json:"forceLimits"` // if true, server which does not meet Limits settings will be deleted. If false, existing suspended servers will be reused, no matter of matching Limits
 	Environment             map[string]interface{} `json:"environment"` // Environment settings for a game. Can be values or matching properties of a gameserver match thingy object in go-template like format // TODO: set correct object description
 	TvSlots                 int                    `json:"tvSlots"`
+	TvPortOffset            int                    `json:"tvPortOffset"`
 	DeleteAfterDuration     Duration               `json:"deleteAfterDuration"`
 	ServerReadyRconCommands []string               `json:"serverReadyRconCommands"`
 	ServerReadyRconWaitTime Duration               `json:"serverReadyRconWaitTime"`
