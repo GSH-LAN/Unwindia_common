@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 	"time"
 )
 
@@ -62,7 +61,7 @@ func (w *MongoWorkItemLock) Lock(ctx context.Context, workitemID string, ttl *ti
 
 	// TTL index
 	index := mongo.IndexModel{
-		Keys:    bsonx.Doc{{Key: "createdAt", Value: bsonx.Int32(1)}},
+		Keys:    bson.D{{"createdAt", 1}},
 		Options: options.Index().SetExpireAfterSeconds(int32(expiresAfter.Seconds())),
 	}
 
