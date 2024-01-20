@@ -9,18 +9,21 @@ type PulsarAuth int
 
 const (
 	AUTH_SIMPLE PulsarAuth = iota
+	AUTH_TOKEN
 	AUTH_OAUTH2
 	_maxAuthid
 )
 
 var PulsarAuthName = map[int]string{
 	0: "simple",
-	1: "oauth2",
+	1: "token",
+	2: "oauth2",
 }
 
 var PulsarAuthValue = map[string]PulsarAuth{
 	PulsarAuthName[0]: AUTH_SIMPLE,
-	PulsarAuthName[1]: AUTH_OAUTH2,
+	PulsarAuthName[1]: AUTH_TOKEN,
+	PulsarAuthName[2]: AUTH_OAUTH2,
 }
 
 func (p PulsarAuth) String() string {

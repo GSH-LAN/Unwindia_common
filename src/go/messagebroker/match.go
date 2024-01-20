@@ -6,8 +6,6 @@ import (
 	"strconv"
 )
 
-const TOPIC = "UNWINDIA_MATCH"
-
 type MatchMessage struct {
 	Message
 	SubType MatchEvent `json:"subtype"`
