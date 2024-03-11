@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/GSH-LAN/Unwindia_common/src/go/matchservice"
 	"github.com/rs/zerolog/log"
+	"net"
 	"strings"
 	"text/template"
 )
@@ -17,6 +18,13 @@ func ParseTemplateForMatch(tpl string, matchinfo *matchservice.MatchInfo) (strin
 		"contains":  strings.Contains,
 		"hasPrefix": strings.HasPrefix,
 		"hasSuffix": strings.HasSuffix,
+		"splitHostPort": func(s string) (map[string]string, error) {
+			host, port, err := net.SplitHostPort(s)
+			if err != nil {
+				return nil, err
+			}
+			return map[string]string{"host": host, "port": port}, nil
+		},
 	}
 
 	tmpl, err := template.New("match").Option("missingkey=error").Funcs(funcs).Parse(tpl)
