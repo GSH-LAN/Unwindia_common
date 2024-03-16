@@ -1,10 +1,10 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/GSH-LAN/Unwindia_common/src/go/matchservice"
 	"github.com/GSH-LAN/Unwindia_common/src/go/messagebroker"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/parkervcp/crocgodyl"
 	"time"
 )
@@ -51,6 +51,7 @@ type GamerServerConfigTemplate struct {
 	DeleteAfterDuration     Duration               `json:"deleteAfterDuration"`
 	ServerReadyRconCommands []string               `json:"serverReadyRconCommands"`
 	ServerReadyRconWaitTime Duration               `json:"serverReadyRconWaitTime"`
+	EnvironmentMapping      map[string]string      `json:"envMapping"`
 }
 
 type Duration struct {
@@ -58,12 +59,12 @@ type Duration struct {
 }
 
 func (d Duration) MarshalJSON() ([]byte, error) {
-	return jsoniter.Marshal(d.String())
+	return json.Marshal(d.String())
 }
 
 func (d *Duration) UnmarshalJSON(b []byte) error {
 	var v interface{}
-	if err := jsoniter.Unmarshal(b, &v); err != nil {
+	if err := json.Unmarshal(b, &v); err != nil {
 		return err
 	}
 	switch value := v.(type) {

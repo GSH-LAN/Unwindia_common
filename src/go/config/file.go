@@ -2,10 +2,10 @@ package config
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/GSH-LAN/Unwindia_common/src/go/matchservice"
 	"github.com/GSH-LAN/Unwindia_common/src/go/unwindiaError"
 	"github.com/fsnotify/fsnotify"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/rs/zerolog/log"
 	"os"
 	"path"
@@ -151,7 +151,7 @@ func (c *ConfigFileImpl) loadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	if err = jsoniter.Unmarshal(configFile, &cfg); err != nil {
+	if err = json.Unmarshal(configFile, &cfg); err != nil {
 		return c.currentConfig, err
 	}
 
