@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/GSH-LAN/Unwindia_common/src/go/matchservice"
+	template2 "github.com/GSH-LAN/Unwindia_common/src/go/template"
 	"github.com/GSH-LAN/Unwindia_common/src/go/unwindiaError"
 	"github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog/log"
@@ -40,13 +41,6 @@ func (c *ConfigFileImpl) GetGameServerTemplateForMatch(info matchservice.MatchIn
 	if !gameValid {
 		return nil, unwindiaError.NewInvalidGameError(gameName)
 	}
-
-	funcs := map[string]any{
-		"contains":  strings.Contains,
-		"hasPrefix": strings.HasPrefix,
-		"hasSuffix": strings.HasSuffix,
-	}
-
 	// TODO: make this shit reliable even with kinda broken configs
 	// we now parse environments to replace custom variables and convert numeric values
 	var newEnvironment = make(map[string]interface{})
@@ -54,7 +48,7 @@ func (c *ConfigFileImpl) GetGameServerTemplateForMatch(info matchservice.MatchIn
 		if val, ok := envValue.(string); ok {
 
 			parsedEnvVar := strings.Builder{}
-			err := template.Must(template.New("serverEnvironment").Funcs(funcs).Parse(val)).Execute(&parsedEnvVar, nil)
+			err := template.Must(template.New("serverEnvironment").Funcs(template2.TemplateFunctions).Parse(val)).Execute(&parsedEnvVar, nil)
 			if err != nil {
 				log.Error().Err(err).Msg("Error parsing environment template")
 			} else {
@@ -63,10 +57,10 @@ func (c *ConfigFileImpl) GetGameServerTemplateForMatch(info matchservice.MatchIn
 
 			if intValue, err := strconv.Atoi(val); err == nil {
 				envValue = intValue
-				log.Trace().Str("environment", envName).Int("value", intValue).Msg("Environemt is type int (parsed from string)")
+				log.Trace().Str("environment", envName).Int("value", intValue).Msg("Environment is type int (parsed from string)")
 			} else {
 				envValue = val
-				log.Trace().Str("environment", envName).Str("value", val).Msg("Environemt is type string")
+				log.Trace().Str("environment", envName).Str("value", val).Msg("Environment is type string")
 			}
 		}
 		newEnvironment[envName] = envValue

@@ -9,25 +9,25 @@ import (
 	"text/template"
 )
 
+var TemplateFunctions = map[string]any{
+	"contains":  strings.Contains,
+	"hasPrefix": strings.HasPrefix,
+	"hasSuffix": strings.HasSuffix,
+	"splitHostPort": func(s string) (map[string]string, error) {
+		host, port, err := net.SplitHostPort(s)
+		if err != nil {
+			return nil, err
+		}
+		return map[string]string{"host": host, "port": port}, nil
+	},
+}
+
 func ParseTemplateForMatch(tpl string, matchinfo *matchservice.MatchInfo) (string, error) {
 	if matchinfo == nil {
 		return "", errors.New("empty matchinfo")
 	}
 
-	funcs := map[string]any{
-		"contains":  strings.Contains,
-		"hasPrefix": strings.HasPrefix,
-		"hasSuffix": strings.HasSuffix,
-		"splitHostPort": func(s string) (map[string]string, error) {
-			host, port, err := net.SplitHostPort(s)
-			if err != nil {
-				return nil, err
-			}
-			return map[string]string{"host": host, "port": port}, nil
-		},
-	}
-
-	tmpl, err := template.New("match").Option("missingkey=error").Funcs(funcs).Parse(tpl)
+	tmpl, err := template.New("match").Option("missingkey=error").Funcs(TemplateFunctions).Parse(tpl)
 	if err != nil {
 		log.Err(err).Msg("Error parsing template")
 		return "", err
